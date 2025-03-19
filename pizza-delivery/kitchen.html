@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuisine - Gestion des Commandes</title>
+    <link href="styles.css" rel="stylesheet">
+    <link href="kitchen.css" rel="stylesheet">
+</head>
+<body class="kitchen-view">
+    <header>
+        <nav>
+            <h1>Interface Cuisine</h1>
+            <div class="kitchen-stats">
+                <div class="stat-item">
+                    <span id="pending-orders">0</span>
+                    <label>Commandes en attente</label>
+                </div>
+                <div class="stat-item">
+                    <span id="preparing-orders">0</span>
+                    <label>En préparation</label>
+                </div>
+                <div class="stat-item">
+                    <span id="completed-orders">0</span>
+                    <label>Terminées</label>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="orders-container">
+            <section class="order-column" id="pending-orders-list">
+                <h2>Commandes en Attente</h2>
+                <div class="orders-list"></div>
+            </section>
+
+            <section class="order-column" id="preparing-orders-list">
+                <h2>En Préparation</h2>
+                <div class="orders-list"></div>
+            </section>
+
+            <section class="order-column" id="completed-orders-list">
+                <h2>Commandes Terminées</h2>
+                <div class="orders-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <div id="order-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Détails de la Commande</h2>
+            <div id="order-details-content"></div>
+            <canvas id="pizzaPreviewCanvas" width="300" height="300"></canvas>
+            <div class="modal-actions">
+                <button class="start-prep-btn">Commencer la Préparation</button>
+                <button class="complete-btn">Terminer la Commande</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="kitchen.js"></script>
+</body>
+</html>

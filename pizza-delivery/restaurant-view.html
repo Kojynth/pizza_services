@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Salle - Restaurant</title>
+    <link rel="stylesheet" href="restaurant-view.css">
+</head>
+<body>
+    <div class="restaurant-container">
+        <h1>Plan de Salle</h1>
+        
+        <!-- Barre d'outils -->
+        <div class="toolbar">
+            <div class="tool-group">
+                <h3>Tables</h3>
+                <div class="tool-item" draggable="true" data-type="table-2">
+                    <div class="tool-preview table-2"></div>
+                    <span>2 pers.</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="table-4">
+                    <div class="tool-preview table-4"></div>
+                    <span>4 pers.</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="table-6">
+                    <div class="tool-preview table-6"></div>
+                    <span>6 pers.</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="table-8">
+                    <div class="tool-preview table-8"></div>
+                    <span>8 pers.</span>
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <h3>Actions</h3>
+                <button id="toggle-grid" class="action-btn">Grille</button>
+                <button id="toggle-snap" class="action-btn">Magnétisme</button>
+                <button id="save-layout" class="action-btn save-btn">Sauvegarder</button>
+                <button id="clear-layout" class="action-btn clear-btn">Effacer tout</button>
+            </div>
+        </div>
+
+        <!-- Zone de dessin -->
+        <div id="layout-area" class="layout-area grid">
+            <!-- Les tables seront ajoutées ici -->
+        </div>
+
+        <!-- Légende des statuts -->
+        <div class="status-legend">
+            <div class="legend-item">
+                <div class="status-color free"></div>
+                <span>Libre</span>
+            </div>
+            <div class="legend-item">
+                <div class="status-color occupied"></div>
+                <span>Occupée</span>
+            </div>
+            <div class="legend-item">
+                <div class="status-color ordered"></div>
+                <span>Commande passée</span>
+            </div>
+            <div class="legend-item">
+                <div class="status-color served"></div>
+                <span>Servi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu contextuel -->
+    <div class="context-menu" id="context-menu">
+        <button data-action="rotate">Rotation</button>
+        <button data-action="delete">Supprimer</button>
+        <button data-action="status">Changer statut</button>
+    </div>
+
+    <script src="restaurant-view.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+</body>
+</html>

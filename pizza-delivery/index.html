@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service de Livraison de Pizza</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>🍕 PizzaExpress</h1>
+            <div class="nav-links">
+                <button class="nav-btn active" data-category="all">Toutes les Pizzas</button>
+                <button class="nav-btn" data-category="classics">Classiques</button>
+                <button class="nav-btn" data-category="specialty">Spécialités</button>
+                <button class="nav-btn" data-category="veggie">Végétariennes</button>
+                <button class="nav-btn" data-category="spicy">Épicées</button>
+                <button class="nav-btn custom-btn">Créer Ma Pizza</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="pizza-selection">
+            <h2>Notre Menu Pizza</h2>
+            <div class="pizza-grid">
+                <!-- Classiques -->
+                <div class="pizza-card" data-category="classics" data-pizza="margherita">
+                    <img src="https://via.placeholder.com/200x200" alt="Margherita">
+                    <h3>Margherita</h3>
+                    <p>Tomates fraîches, mozzarella, basilic</p>
+                    <span class="price">12,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                <div class="pizza-card" data-category="classics" data-pizza="pepperoni">
+                    <img src="https://via.placeholder.com/200x200" alt="Pepperoni">
+                    <h3>Pepperoni</h3>
+                    <p>Pepperoni, mozzarella, sauce tomate</p>
+                    <span class="price">14,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                
+                <!-- Spécialités -->
+                <div class="pizza-card" data-category="specialty" data-pizza="fruits-de-mer">
+                    <img src="https://via.placeholder.com/200x200" alt="Fruits de Mer">
+                    <h3>Fruits de Mer</h3>
+                    <p>Crevettes, calamars, moules, ail</p>
+                    <span class="price">18,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                <div class="pizza-card" data-category="specialty" data-pizza="poulet-bbq">
+                    <img src="https://via.placeholder.com/200x200" alt="Poulet BBQ">
+                    <h3>Poulet BBQ</h3>
+                    <p>Poulet grillé, sauce BBQ, oignons rouges</p>
+                    <span class="price">16,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                
+                <!-- Végétariennes -->
+                <div class="pizza-card" data-category="veggie" data-pizza="vegetarienne">
+                    <img src="https://via.placeholder.com/200x200" alt="Végétarienne">
+                    <h3>Jardinière</h3>
+                    <p>Poivrons, champignons, oignons, olives</p>
+                    <span class="price">15,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                <div class="pizza-card" data-category="veggie" data-pizza="quatre-fromages">
+                    <img src="https://via.placeholder.com/200x200" alt="Quatre Fromages">
+                    <h3>Quatre Fromages</h3>
+                    <p>Mozzarella, gorgonzola, parmesan, ricotta</p>
+                    <span class="price">17,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                
+                <!-- Épicées -->
+                <div class="pizza-card" data-category="spicy" data-pizza="diavola">
+                    <img src="https://via.placeholder.com/200x200" alt="Diavola">
+                    <h3>Diavola</h3>
+                    <p>Salami piquant, piments, oignons rouges</p>
+                    <span class="price">16,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+                <div class="pizza-card" data-category="spicy" data-pizza="mexicaine">
+                    <img src="https://via.placeholder.com/200x200" alt="Mexicaine">
+                    <h3>Mexicaine</h3>
+                    <p>Bœuf haché, jalapeños, maïs, sauce piquante</p>
+                    <span class="price">17,99 €</span>
+                    <button class="select-btn">Sélectionner</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Personnalisation de Pizza -->
+        <section class="pizza-personalizer" style="display: none;">
+            <h2>Créez Votre Pizza Parfaite</h2>
+            <div class="personalizer-container">
+                <div class="pizza-preview">
+                    <canvas id="pizzaCanvas" width="400" height="400"></canvas>
+                </div>
+                <div class="size-selection">
+                    <h3>1. Choisissez Votre Taille</h3>
+                    <select id="pizza-size">
+                        <option value="small">Petite (25cm)</option>
+                        <option value="medium">Moyenne (30cm)</option>
+                        <option value="large">Grande (35cm)</option>
+                        <option value="xl">Extra Large (40cm)</option>
+                    </select>
+                </div>
+
+                <div class="crust-selection">
+                    <h3>2. Choisissez Votre Pâte</h3>
+                    <select id="pizza-crust">
+                        <option value="thin">Pâte Fine</option>
+                        <option value="regular">Pâte Classique</option>
+                        <option value="thick">Pâte Épaisse</option>
+                        <option value="stuffed">Pâte Fourrée (+3€)</option>
+                    </select>
+                </div>
+
+                <div class="sauce-selection">
+                    <h3>3. Choisissez Votre Sauce</h3>
+                    <select id="pizza-sauce">
+                        <option value="tomato">Sauce Tomate Classique</option>
+                        <option value="bbq">Sauce BBQ</option>
+                        <option value="white">Sauce Blanche</option>
+                        <option value="pesto">Pesto</option>
+                    </select>
+                </div>
+
+                <div class="toppings-selection">
+                    <h3>4. Choisissez Vos Garnitures (1,50€ chacune)</h3>
+                    <div class="toppings-grid">
+                        <div class="topping-item">
+                            <input type="checkbox" id="pepperoni" value="pepperoni">
+                            <label for="pepperoni">Pepperoni</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="mushrooms" value="champignons">
+                            <label for="mushrooms">Champignons</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="onions" value="oignons">
+                            <label for="onions">Oignons</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="sausage" value="saucisse">
+                            <label for="sausage">Saucisse</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="bacon" value="bacon">
+                            <label for="bacon">Bacon</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="extra-cheese" value="fromage-supp">
+                            <label for="extra-cheese">Fromage Supplémentaire</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="bell-peppers" value="poivrons">
+                            <label for="bell-peppers">Poivrons</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="olives" value="olives">
+                            <label for="olives">Olives</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-summary">
+                    <h3>Prix Total : <span id="total-price">10,99 €</span></h3>
+                    <button class="create-pizza-btn">Créer et Commander</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Informations de Livraison -->
+        <section class="delivery-section" style="display: none;">
+            <h2>Informations de Livraison</h2>
+            <div id="map"></div>
+            <div id="store-info"></div>
+            <form id="delivery-form">
+                <div class="form-group">
+                    <label for="name">Nom Complet :</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Numéro de Téléphone :</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Adresse de Livraison :</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="instructions">Instructions Spéciales :</label>
+                    <textarea id="instructions"></textarea>
+                </div>
+                <button type="submit" class="submit-order-btn">Commander</button>
+            </form>
+        </section>
+
+        <section class="location-section" style="display: none;">
+            <h2>Recherche du Restaurant le Plus Proche</h2>
+            <div id="map"></div>
+            <div id="nearest-store">
+                <h3>Restaurant le Plus Proche :</h3>
+                <p id="store-info"></p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Section Gestion des Tables -->
+    <section class="restaurant-section">
+        <h2>Gestion des Tables</h2>
+        <div class="tables-grid" id="tables-grid">
+            <!-- Les tables seront ajoutées dynamiquement ici -->
+        </div>
+    </section>
+
+    <script type="module" src="restaurant.js"></script>
+    <script src="script.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8qjCm2YfBTBo_9UiN19lzRtDFuTexX-g&libraries=places,geometry&callback=initMap" async defer></script>
+</body>
+</html>
