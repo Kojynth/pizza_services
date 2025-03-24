@@ -3,78 +3,525 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plan de Salle - Restaurant</title>
-    <link rel="stylesheet" href="restaurant-view.css">
+    <title>Gestion des Tables - Restaurant</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --color-free: #4CAF50;
+            --color-waiting: #FFC107;
+            --color-consuming: #2196F3;
+            --color-clearing: #F44336;
+            --color-chair: #757575;
+            --color-chair-occupied: #212121;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+
+        .grid {
+            position: relative;
+            width: 640px;
+            height: 640px;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+
+        .grid-cell {
+            position: absolute;
+            border: 1px solid #f0f0f0;
+            width: 20px;
+            height: 20px;
+        }
+
+        .controls {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .controls h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+
+        button.active {
+            background: #1565C0;
+        }
+
+        .legend {
+            margin-top: 20px;
+        }
+
+        .legend h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+
+        .furniture {
+            position: absolute;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .furniture.selected {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 2px rgba(33,150,243,0.3);
+        }
+
+        .small-table {
+            width: 40px;
+            height: 40px;
+        }
+
+        .large-table {
+            width: 160px;
+            height: 160px;
+        }
+
+        .chair {
+            width: 20px;
+            height: 20px;
+            background: var(--color-chair);
+        }
+
+        .chair.occupied {
+            background: var(--color-chair-occupied);
+        }
+
+        .state-FREE { background: var(--color-free); }
+        .state-WAITING { background: var(--color-waiting); }
+        .state-CONSUMING { background: var(--color-consuming); }
+        .state-CLEARING { background: var(--color-clearing); }
+
+        .table-number {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 70%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .close {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #payment-form {
+            padding: 20px;
+        }
+
+        #payment-element {
+            margin-bottom: 24px;
+        }
+
+        .order-button {
+            background: #4CAF50;
+            margin-top: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
 </head>
 <body>
-    <div class="restaurant-container">
-        <h1>Plan de Salle</h1>
+    <div class="container">
+        <div class="grid-container">
+            <div class="grid" id="restaurant-grid"></div>
+        </div>
         
-        <!-- Barre d'outils -->
-        <div class="toolbar">
-            <div class="tool-group">
-                <h3>Tables</h3>
-                <div class="tool-item" draggable="true" data-type="table-2">
-                    <div class="tool-preview table-2"></div>
-                    <span>2 pers.</span>
-                </div>
-                <div class="tool-item" draggable="true" data-type="table-4">
-                    <div class="tool-preview table-4"></div>
-                    <span>4 pers.</span>
-                </div>
-                <div class="tool-item" draggable="true" data-type="table-6">
-                    <div class="tool-preview table-6"></div>
-                    <span>6 pers.</span>
-                </div>
-                <div class="tool-item" draggable="true" data-type="table-8">
-                    <div class="tool-preview table-8"></div>
-                    <span>8 pers.</span>
-                </div>
+        <div class="controls">
+            <h2>Contrôles</h2>
+            
+            <div class="button-group">
+                <button onclick="setTool('small_table')" id="btn-small-table">Petite Table (2x2)</button>
+                <button onclick="setTool('large_table')" id="btn-large-table">Grande Table (8x8)</button>
+                <button onclick="setTool('chair')" id="btn-chair">Chaise</button>
+                <button onclick="removeSelected()" id="btn-delete">Supprimer la sélection</button>
+                <button onclick="cycleTableState()" id="btn-state">Changer l'état de la table</button>
+                <button onclick="handleOrder()" class="order-button">Commander</button>
             </div>
 
-            <div class="tool-group">
-                <h3>Actions</h3>
-                <button id="toggle-grid" class="action-btn">Grille</button>
-                <button id="toggle-snap" class="action-btn">Magnétisme</button>
-                <button id="save-layout" class="action-btn save-btn">Sauvegarder</button>
-                <button id="clear-layout" class="action-btn clear-btn">Effacer tout</button>
-            </div>
-        </div>
+            <div class="legend">
+                <h3>États des Tables</h3>
+                <div class="legend-item">
+                    <div class="legend-color state-FREE"></div>
+                    <span>Libre</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color state-WAITING"></div>
+                    <span>En attente de commande</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color state-CONSUMING"></div>
+                    <span>En train de consommer</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color state-CLEARING"></div>
+                    <span>À débarrasser</span>
+                </div>
 
-        <!-- Zone de dessin -->
-        <div id="layout-area" class="layout-area grid">
-            <!-- Les tables seront ajoutées ici -->
-        </div>
-
-        <!-- Légende des statuts -->
-        <div class="status-legend">
-            <div class="legend-item">
-                <div class="status-color free"></div>
-                <span>Libre</span>
-            </div>
-            <div class="legend-item">
-                <div class="status-color occupied"></div>
-                <span>Occupée</span>
-            </div>
-            <div class="legend-item">
-                <div class="status-color ordered"></div>
-                <span>Commande passée</span>
-            </div>
-            <div class="legend-item">
-                <div class="status-color served"></div>
-                <span>Servi</span>
+                <h3>Chaises</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--color-chair)"></div>
+                    <span>Libre</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--color-chair-occupied)"></div>
+                    <span>Occupée</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Menu contextuel -->
-    <div class="context-menu" id="context-menu">
-        <button data-action="rotate">Rotation</button>
-        <button data-action="delete">Supprimer</button>
-        <button data-action="status">Changer statut</button>
+    <!-- Modal de paiement -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <h2>Paiement</h2>
+            <form id="payment-form">
+                <div id="payment-element"></div>
+                <button id="submit-payment">Payer</button>
+            </form>
+        </div>
     </div>
 
-    <script src="restaurant-view.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const GRID_SIZE = 32;
+        const CELL_SIZE = 20;
+        let currentTool = null;
+        let selectedFurniture = null;
+        let tableCounter = 1;
+        const states = ['FREE', 'WAITING', 'CONSUMING', 'CLEARING'];
+
+        // Stripe
+        const stripe = Stripe('pk_test_votreclépublique');
+        let elements;
+        let paymentElement;
+        let currentOrderId;
+
+        async function handleOrder() {
+            if (!selectedFurniture || selectedFurniture.classList.contains('chair')) {
+                showNotification('Veuillez sélectionner une table', 'error');
+                return;
+            }
+
+            const tableNumber = selectedFurniture.querySelector('.table-number').textContent;
+
+            try {
+                const response = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ table_number: tableNumber })
+                });
+
+                const data = await response.json();
+                currentOrderId = data.order_id;
+
+                const { clientSecret } = data;
+                elements = stripe.elements({ clientSecret });
+                paymentElement = elements.create('payment');
+                paymentElement.mount('#payment-element');
+
+                document.getElementById('payment-modal').style.display = 'block';
+            } catch (error) {
+                showNotification('Erreur lors de la création de la commande', 'error');
+            }
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin,
+                }
+            });
+
+            if (error) {
+                showNotification('Erreur de paiement: ' + error.message, 'error');
+            } else {
+                showNotification('Commande confirmée! ID: ' + currentOrderId, 'success');
+                closePaymentModal();
+                socket.emit('order_completed', { order_id: currentOrderId });
+            }
+        });
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#4CAF50' : '#F44336';
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function initGrid() {
+            const grid = document.getElementById('restaurant-grid');
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.style.left = (x * CELL_SIZE) + 'px';
+                    cell.style.top = (y * CELL_SIZE) + 'px';
+                    grid.appendChild(cell);
+                }
+            }
+
+            grid.addEventListener('click', handleGridClick);
+        }
+
+        function setTool(tool) {
+            const buttons = document.querySelectorAll('.button-group button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            currentTool = tool;
+            document.getElementById(`btn-${tool}`).classList.add('active');
+            
+            if (selectedFurniture) {
+                selectedFurniture.classList.remove('selected');
+                selectedFurniture = null;
+            }
+        }
+
+        function handleGridClick(event) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = Math.floor((event.clientX - rect.left) / CELL_SIZE);
+            const y = Math.floor((event.clientY - rect.top) / CELL_SIZE);
+
+            if (currentTool) {
+                addFurniture(x, y);
+            } else {
+                const clicked = getFurnitureAt(x, y);
+                if (clicked) {
+                    // Gestion du clic droit pour la suppression
+                    if (event.button === 2) {
+                        clicked.remove();
+                        selectedFurniture = null;
+                        return;
+                    }
+
+                    // Gestion du clic gauche pour la sélection et le changement d'état
+                    if (selectedFurniture) {
+                        selectedFurniture.classList.remove('selected');
+                    }
+                    
+                    if (selectedFurniture !== clicked) {
+                        clicked.classList.add('selected');
+                        selectedFurniture = clicked;
+                        
+                        // Si c'est une table, changer son état
+                        if (!clicked.classList.contains('chair')) {
+                            cycleTableState();
+                        }
+                    } else {
+                        selectedFurniture = null;
+                    }
+                }
+            }
+        }
+
+        function addFurniture(x, y) {
+            const width = currentTool === 'small_table' ? 2 : currentTool === 'large_table' ? 8 : 1;
+            const height = width;
+
+            // Vérifier les collisions
+            if (hasCollision(x, y, width, height)) return;
+
+            const furniture = document.createElement('div');
+            furniture.className = `furniture ${currentTool === 'small_table' ? 'small-table' : 
+                                          currentTool === 'large_table' ? 'large-table' : 'chair'}`;
+            
+            if (currentTool !== 'chair') {
+                furniture.classList.add('state-FREE');
+                const number = document.createElement('div');
+                number.className = 'table-number';
+                number.textContent = tableCounter++;
+                furniture.appendChild(number);
+            }
+
+            furniture.style.left = (x * CELL_SIZE) + 'px';
+            furniture.style.top = (y * CELL_SIZE) + 'px';
+            document.getElementById('restaurant-grid').appendChild(furniture);
+        }
+
+        function hasCollision(x, y, width, height) {
+            const furniture = document.querySelectorAll('.furniture');
+            for (const f of furniture) {
+                const fx = parseInt(f.style.left) / CELL_SIZE;
+                const fy = parseInt(f.style.top) / CELL_SIZE;
+                const fw = f.classList.contains('small-table') ? 2 : 
+                          f.classList.contains('large-table') ? 8 : 1;
+                const fh = fw;
+
+                if (x < fx + fw && x + width > fx && y < fy + fh && y + height > fy) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function getFurnitureAt(x, y) {
+            const furniture = document.querySelectorAll('.furniture');
+            for (const f of furniture) {
+                const fx = parseInt(f.style.left) / CELL_SIZE;
+                const fy = parseInt(f.style.top) / CELL_SIZE;
+                const fw = f.classList.contains('small-table') ? 2 : 
+                          f.classList.contains('large-table') ? 8 : 1;
+                const fh = fw;
+
+                if (x >= fx && x < fx + fw && y >= fy && y < fy + fh) {
+                    return f;
+                }
+            }
+            return null;
+        }
+
+        function removeSelected() {
+            if (selectedFurniture) {
+                selectedFurniture.remove();
+                selectedFurniture = null;
+            }
+        }
+
+        function cycleTableState() {
+            if (!selectedFurniture || selectedFurniture.classList.contains('chair')) return;
+
+            let currentState = states.find(state => selectedFurniture.classList.contains(`state-${state}`));
+            let currentIndex = states.indexOf(currentState);
+            let nextState = states[(currentIndex + 1) % states.length];
+
+            selectedFurniture.classList.remove(`state-${currentState}`);
+            selectedFurniture.classList.add(`state-${nextState}`);
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            initGrid();
+            setTool('small_table');
+            
+            // Désactiver le menu contextuel par défaut
+            document.getElementById('restaurant-grid').addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+        });
+    </script>
 </body>
 </html>

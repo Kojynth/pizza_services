@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+    <process id="pizza_process" isExecutable="false">
+        <startEvent id="start" name="Début" />
+        <task id="commande" name="Commande reçue" />
+        <exclusiveGateway id="verif" name="Vérification" />
+        <endEvent id="invalide" name="Commande invalide" />
+        <task id="valide" name="Préparation de la pizza" />
+        <task id="cuisson" name="Cuisson" />
+        <task id="emballage" name="Emballage" />
+        <exclusiveGateway id="choix" name="Livraison ou Retrait" />
+        <task id="retrait" name="Retrait en magasin" />
+        <task id="remise" name="Remise au client" />
+        <endEvent id="fin_retrait" name="Fin" />
+        <task id="livreur" name="Prise en charge par le livreur" />
+        <task id="livraison" name="Livraison au client" />
+        <endEvent id="fin_livraison" name="Fin" />
+        <sequenceFlow sourceRef="start" targetRef="commande" />
+        <sequenceFlow sourceRef="commande" targetRef="verif" />
+        <sequenceFlow sourceRef="verif" targetRef="invalide" name="Non" />
+        <sequenceFlow sourceRef="verif" targetRef="valide" name="Oui" />
+        <sequenceFlow sourceRef="valide" targetRef="cuisson" />
+        <sequenceFlow sourceRef="cuisson" targetRef="emballage" />
+        <sequenceFlow sourceRef="emballage" targetRef="choix" />
+        <sequenceFlow sourceRef="choix" targetRef="retrait" name="Retrait" />
+        <sequenceFlow sourceRef="retrait" targetRef="remise" />
+        <sequenceFlow sourceRef="remise" targetRef="fin_retrait" />
+        <sequenceFlow sourceRef="choix" targetRef="livreur" name="Livraison" />
+        <sequenceFlow sourceRef="livreur" targetRef="livraison" />
+        <sequenceFlow sourceRef="livraison" targetRef="fin_livraison" />
+    </process>
+</definitions>
